@@ -140,6 +140,11 @@ class DistressDetector:
         """
         Run distress detection in a separate thread (non-blocking).
 
+        .. deprecated::
+            The synchronous `detect()` method is preferred for safety-critical
+            paths. Async detection creates a race condition where inference
+            could begin before distress is caught. Retained for API compat.
+
         Args:
             text: The user's input text to scan.
             callback: Optional function called with (bool) result.
@@ -155,7 +160,10 @@ class DistressDetector:
             except Exception as e:
                 print(f"[WitnessChain] Distress detector thread error: {e}")
                 if callback:
-                    callback(False)  # Safe default: don't trigger exit on error
+                    # Fail-SAFE: trigger exit on error.
+                    # False positives (premature exit) are recoverable.
+                    # False negatives (missed distress) are NOT acceptable.
+                    callback(True)
 
         thread = threading.Thread(target=_run, daemon=True)
         thread.start()

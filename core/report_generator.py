@@ -43,6 +43,12 @@ class ReportGenerator:
         pdf = FPDF()
         pdf.set_auto_page_break(auto=True, margin=15)
 
+        # NOTE: Helvetica does not support Arabic, Tigrinya, or other non-Latin scripts.
+        # For multilingual PDF output, register a Unicode font (e.g. NotoSans, DejaVuSans)
+        # via pdf.add_font("NotoSans", "", path, uni=True).
+        # For the demo, non-Latin text may render as placeholders in PDF output.
+        # DOCX format handles Unicode correctly via python-docx.
+
         # --- Title Page ---
         pdf.add_page()
         pdf.set_font("Helvetica", "B", 24)

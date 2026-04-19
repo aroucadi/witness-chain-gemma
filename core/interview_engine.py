@@ -6,6 +6,7 @@ Injects TRUST system prompt before every Gemma 4 call.
 
 import json
 import os
+import re
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
@@ -130,6 +131,9 @@ class InterviewEngine:
             "by pressing the **⬛ Stop Safely** button or typing [STOP].\n\n"
             "Everything you share will be stored only on this device and will not "
             "be sent anywhere without your permission.\n\n"
+            "This interview has four short sections — context, events, people, "
+            "and evidence — with two questions each. We will complete in "
+            "approximately 8 exchanges.\n\n"
             "When you are ready, please tell me — in any language you prefer — "
             "when and where did this event take place?"
         )
@@ -161,11 +165,16 @@ class InterviewEngine:
             return ("This session has already ended.", True, session.get("detected_language", "en"))
 
         # --- Step 1: Detect language ---
-        detected_lang = "en"
+        # langdetect is unreliable for short inputs (<20 chars).
+        # The TRUST system prompt instructs Gemma 4 to match the witness's
+        # language natively, so even if detection is wrong here, the model
+        # will respond in the correct language.
+        detected_lang = session.get("detected_language", "en")
         try:
-            detected_lang = detect_language(user_input)
+            if len(user_input.strip()) >= 20:
+                detected_lang = detect_language(user_input)
         except Exception:
-            detected_lang = session.get("detected_language", "en")
+            pass  # Keep previous language detection
 
         session["detected_language"] = detected_lang
 
@@ -277,12 +286,15 @@ class InterviewEngine:
         session["trust_scores"]["total_turns"] += 1
 
         # Check TRUST compliance on generated response
-        question_count = response.count("?")
+        # Detect question marks across scripts: Latin ?, Arabic ؟, etc.
+        question_marks = re.findall(r'[?\u061F\u2047\u2048\u2049\u2753\u2754]', response)
+        question_count = len(question_marks)
         if question_count > 1:
             session["trust_scores"]["single_question_violations"] += 1
             # ENFORCE: truncate to first question only (measure AND enforce)
-            sentences = response.split("?")
-            response = sentences[0].strip() + "?"
+            parts = re.split(r'[?\u061F\u2047\u2048\u2049\u2753\u2754]', response)
+            first_q_mark = question_marks[0]
+            response = parts[0].strip() + first_q_mark
             self.audit_log.append({
                 "session_id": session_id,
                 "event": "TRUST_ENFORCEMENT",

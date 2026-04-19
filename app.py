@@ -27,6 +27,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAMPLE_DIR = os.path.join(BASE_DIR, "data", "sample_testimonies")
 
 # These are populated in init_system()
+# ⚠️ SINGLE-USER PROTOTYPE: All state is shared across sessions.
+# For multi-user deployment, migrate to gr.State() per-session storage.
+# This is acceptable for the hackathon demo (single evaluator at a time).
 model = None
 distress_detector = None
 interview_engine = None
@@ -396,8 +399,10 @@ def build_app():
             > It is not a production system. Do not use this to document real testimonies
             > without review by qualified human rights professionals and trauma counsellors.
             >
-            > All data is stored locally on this device only and is **never transmitted**
-            > to external servers or APIs. You may delete your testimony at any time.
+            > All model inference runs locally on this device. When using `share=True`,
+            > UI traffic is routed through Gradio's proxy — no model weights or inference
+            > outputs are stored externally. For fully offline operation, use `share=False`.
+            > You may delete your testimony at any time.
             >
             > This system implements the **TRUST framework**, **Trauma-Informed Computing** principles,
             > and **Amnesty International's Algorithmic Accountability** guidelines.

@@ -23,6 +23,7 @@ class CrossReferenceEngine:
     """
 
     MAX_CONTEXT_TOKENS = 262144  # Gemma 4 256K context window
+    TEMPLATE_OVERHEAD_TOKENS = 64  # Conservative estimate for chat template BOS/EOS/turn tokens
 
     def __init__(self, model: GemmaLoader):
         """
@@ -127,24 +128,33 @@ class CrossReferenceEngine:
               f"{token_usage['display']}")
 
         # Verify we're within context limits.
-        # Subtract generation budget so input + output never exceeds model's max sequence length.
+        # Subtract generation budget + template overhead so input + output
+        # never exceeds model's max sequence length.
         MAX_GENERATION_TOKENS = 2048
-        safe_input_limit = self.MAX_CONTEXT_TOKENS - MAX_GENERATION_TOKENS
+        safe_input_limit = self.MAX_CONTEXT_TOKENS - MAX_GENERATION_TOKENS - self.TEMPLATE_OVERHEAD_TOKENS
 
         if token_usage["tokens_used"] > safe_input_limit * 0.95:
             return {
                 "error": (
                     f"Token count ({token_usage['tokens_used']:,}) exceeds 95% of safe input limit "
-                    f"({safe_input_limit:,} = {self.MAX_CONTEXT_TOKENS:,} − {MAX_GENERATION_TOKENS:,} "
-                    f"generation budget). Reduce testimony count."
+                    f"({safe_input_limit:,} = {self.MAX_CONTEXT_TOKENS:,} − {MAX_GENERATION_TOKENS:,} generation "
+                    f"− {self.TEMPLATE_OVERHEAD_TOKENS} template overhead). Reduce testimony count."
                 ),
                 "token_usage": token_usage,
             }
 
         # Single inference call — all corroboration surfaced at once
+        # System prompt ensures cross-reference analysis is governed by
+        # ethical constraints (no fabrication, null for unknowns).
+        crossref_system_prompt = (
+            "You are a cross-reference analyst for human rights testimony corroboration. "
+            "Return ONLY valid JSON. Do not fabricate or infer facts not present in the testimonies. "
+            "Use null for unknown fields. Your analysis will be reviewed by human investigators."
+        )
         try:
             response = self.model.generate_long(
                 prompt=prompt,
+                system_prompt=crossref_system_prompt,
                 max_new_tokens=2048
             )
         except torch.cuda.OutOfMemoryError:
@@ -199,6 +209,7 @@ class CrossReferenceEngine:
         try:
             retry_response = self.model.generate_long(
                 prompt=retry_prompt,
+                system_prompt="Return ONLY a valid JSON object. No markdown, no explanation.",
                 max_new_tokens=2048
             )
             parsed = self._parse_json_response(retry_response)

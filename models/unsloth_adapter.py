@@ -41,6 +41,10 @@ class UnslothAdapter:
             )
             FastLanguageModel.for_inference(self.model)
             self._is_finetuned = True
+            # Verify context length was honoured
+            actual_max = getattr(self.model.config, 'max_position_embeddings', None)
+            if actual_max and actual_max < 262144:
+                print(f"[WitnessChain] WARNING: Requested 256K context but model config reports {actual_max}")
             print(f"[WitnessChain] Fine-tuned model loaded from {self.adapter_path}")
         except Exception as e:
             print(f"[WitnessChain] Adapter not found ({e}). Loading base model.")

@@ -61,7 +61,13 @@ class GemmaLoader:
 
         if self.use_finetuned:
             from .unsloth_adapter import UnslothAdapter
-            adapter_path = "models/witnesschain-lora-adapter"
+            # Adapter path: update to your HuggingFace Hub ID after running
+            # the Unsloth fine-tuning notebook and pushing with model.push_to_hub().
+            # Local fallback: models/witnesschain-lora-adapter (if saved locally).
+            adapter_path = os.environ.get(
+                "WITNESSCHAIN_ADAPTER_PATH",
+                "models/witnesschain-lora-adapter"
+            )
             print(f"[WitnessChain] Loading fine-tuned model via UnslothAdapter...")
             adapter = UnslothAdapter(adapter_path=adapter_path, base_model_id=self._model_id, hf_token=self.hf_token)
             self.model, self.tokenizer = adapter.load()
@@ -77,6 +83,10 @@ class GemmaLoader:
         # Build shared kwargs — supports offline mode for air-gapped deployments
         load_kwargs = {
             "token": self.hf_token,
+            # trust_remote_code is required for Gemma 4's custom tokenizer/config.
+            # Risk: model repo could inject arbitrary code. Mitigated by:
+            # 1. Loading only from google/gemma-4-* official repos
+            # 2. Running in ephemeral Colab environment (no persistent access)
             "trust_remote_code": True,
         }
         if offline_mode:
@@ -145,12 +155,13 @@ class GemmaLoader:
         )
         return response.strip()
 
-    def generate_long(self, prompt: str, max_new_tokens=2048) -> str:
+    def generate_long(self, prompt: str, system_prompt: str = None, max_new_tokens=2048) -> str:
         """
         Long-form inference for cross-reference analysis (larger output budget).
 
         Args:
-            prompt: The full prompt including system instructions and packed testimonies.
+            prompt: The full prompt including packed testimonies.
+            system_prompt: Optional system-level constraints (e.g. TRUST governance).
             max_new_tokens: Maximum tokens to generate (default 2048 for cross-ref output).
 
         Returns:
@@ -159,9 +170,10 @@ class GemmaLoader:
         if self.model is None or self.tokenizer is None:
             raise RuntimeError("Model not loaded. Call load() first.")
 
-        messages = [
-            {"role": "user", "content": prompt}
-        ]
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
 
         input_ids = self.tokenizer.apply_chat_template(
             messages,
