@@ -28,6 +28,11 @@ DISTRESS_KEYWORDS = {
         "ساعدوني", "أنا خائفة", "لا أقدر", "هذا كثير", "أوجعني",
         "مرعوب", "كابوس", "أريد أن أتوقف"
     ],
+    "ar-SD": [
+        "كفى", "أوقف", "لا أستطيع", "خائف", "خوف", "توقف",
+        "يا زول", "خلاص", "ما بقدر", "ساعدونا", "داير أقيف",
+        "تعبتا شديد", "مرعوب", "كابوس", "أرجوك أوقف"
+    ],
     "fr": [
         "arrêtez", "assez", "je ne peux pas", "trop", "j'ai peur",
         "ça fait mal", "je veux arrêter", "laissez-moi", "c'est trop",
@@ -46,6 +51,22 @@ DISTRESS_KEYWORDS = {
     "ti": [
         "አቁም", "በቃ", "አልችልም", "ፈሪሐ", "የሕምም", "ኣቁም",
         "ኣይደልን", "ሓግዙኒ", "ይኣክል", "ኣይክእልን"
+    ],
+    "so": [
+        "jooji", "filo", "cabsi", "caawimaad", "xanuun", "ma rabo",
+        "i daa", "waa igu filan", "ma rabo inaan hadlo", "ii jooji",
+        "fadlan jooji", "kama bixi karo", "waxay iila muuqataa xumaan"
+    ],
+    "my": [
+        "ရပ်", "တော်ပြီ", "ကြောက်တယ်", "ကူညီပါ", "နာတယ်",
+        "မလုပ်ချင်တော့ဘူး", "ဆက်မပြောချင်ဘူး", "ရပ်ပေးပါ", "အရမ်းနာတယ်",
+        "ကြောက်နေပြီ", "ကူညီကြပါ", "မခံနိုင်တော့ဘူး"
+    ],
+    "es": [
+        "parar", "basta", "miedo", "ayuda", "duele", "no quiero",
+        "deténgase", "por favor paren", "ya es suficiente", "no puedo más",
+        "auxilio", "tengo miedo", "déjenme ir", "esto es demasiado",
+        "ya no quiero hablar", "me duele mucho", "socorro"
     ],
     "universal": [
         "[STOP]", "[ENOUGH]", "[EXIT]", "!!!",
@@ -90,37 +111,40 @@ class DistressDetector:
                 "en": "If you are in crisis, please contact your local emergency services or a crisis helpline.",
             }
 
-    def detect(self, text: str) -> bool:
+    def detect(self, text: str) -> Optional[str]:
         """
         Detect distress signals in the given text.
 
-        Checks all language keyword sets. Any single match returns True.
+        Checks all language keyword sets. Returns the key of the first match.
 
         Args:
             text: The user's input text to scan.
 
         Returns:
-            True if any distress signal is detected.
+            The language key (e.g., 'en', 'ar-SD') if detected, else None.
         """
         if not text:
-            return False
+            return None
 
         text_lower = text.lower().strip()
 
         # Check universal signals first (case-sensitive for bracketed commands)
-        for keyword in self.keywords["universal"]:
+        for keyword in self.keywords.get("universal", []):
             if keyword in text or keyword.lower() in text_lower:
-                return True
+                return "universal"
 
         # Check all language-specific keywords
-        for lang, keywords in self.keywords.items():
+        # Priority: Check regional dialects (like ar-SD) before generic ones (ar)
+        lang_keys = sorted(self.keywords.keys(), key=lambda x: len(x), reverse=True)
+        for lang in lang_keys:
             if lang == "universal":
                 continue
+            keywords = self.keywords[lang]
             for keyword in keywords:
                 if self._keyword_match(keyword, text_lower, text):
-                    return True
+                    return lang
 
-        return False
+        return None
 
     def _keyword_match(self, keyword: str, text_lower: str, text_original: str) -> bool:
         """
@@ -183,29 +207,46 @@ class DistressDetector:
         )
         # Old implementation removed to ensure safety.
 
-    def get_crisis_resources(self, language_code: str = "en") -> str:
+    def get_crisis_resources(self, language_code: str = "en", is_online: bool = False) -> str:
         """
-        Returns crisis resources for the given language.
-
-        Args:
-            language_code: ISO 639-1 language code (e.g., 'en', 'ar', 'fr', 'sw', 'ti').
-
-        Returns:
-            Crisis resource string for the specified language.
-            Falls back to English if language not available.
+        Returns crisis resources for the given language using the structured schema.
+        Prioritizes phone numbers for offline-first support according to mandated order.
         """
         if self._crisis_resources is None:
             return "If you are in crisis, please contact your local emergency services."
 
-        resource = self._crisis_resources.get(language_code)
-        if resource:
-            return resource
+        res = self._crisis_resources.get(language_code)
+        if not res:
+            # Fallback to base language if specific regional key (e.g. ar-SD) not found
+            base_lang = language_code.split('-')[0]
+            res = self._crisis_resources.get(base_lang)
+            
+        if not res:
+            res = self._crisis_resources.get("en")
+            
+        if not isinstance(res, dict):
+            return str(res)
 
-        # Fallback to English
-        return self._crisis_resources.get(
-            "en",
-            "If you are in crisis, please contact your local emergency services."
-        )
+        # Build output string in priority order: Org -> Phone -> (WhatsApp if online) -> UNHCR
+        org = res.get("org", "Local Support")
+        phone = res.get("phone", "Emergency Services")
+        whatsapp = res.get("whatsapp")
+        unhcr = res.get("unhcr")
+        
+        lines = [
+            f"SAFETY ALERT: We have ended the session for your well-being.",
+            f"\n{org}",
+            f"📞 PHONE (Offline): {phone}"
+        ]
+        
+        if is_online and whatsapp:
+            # Rendered as text only for security/simplicity
+            lines.append(f"💬 WHATSAPP: {whatsapp}")
+            
+        if unhcr:
+            lines.append(f"🌐 UNHCR Contact: {unhcr}")
+            
+        return "\n".join(lines)
 
     def get_safe_exit_message(self, language_code: str = "en") -> str:
         """

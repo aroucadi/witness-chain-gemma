@@ -6,8 +6,8 @@ Extract:
 {
   "incident_date": "YYYY-MM-DD or approximate description",
   "incident_location": "most specific location mentioned",
-  "incident_type": "one of: [displacement, detention, violence, property_destruction, other]",
-  "perpetrator_description": "physical description or group affiliation only — no names unless witness volunteered them",
+  "incident_type": "one of: [displacement, detention, violence, property_destruction, gang_violence, organised_crime, other]",
+  "perpetrator_description": "Identify any organised group, unit, or individual mentioned. Avoid assuming military affiliation unless explicitly stated by the witness. Include visible symbols/tattoos/colours. No names unless volunteered.",
   "victim_count": "number or range if mentioned",
   "witness_relationship_to_event": "direct_witness / heard_from_others / survivor",
   "evidence_mentioned": ["list of any physical evidence or documents mentioned"],

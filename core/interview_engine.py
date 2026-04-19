@@ -178,22 +178,26 @@ class InterviewEngine:
 
         session["detected_language"] = detected_lang
 
-        # --- Step 2: Check distress FIRST (non-negotiable) ---
-        # Distress detection runs SYNCHRONOUSLY by design.
-        # Keyword matching completes in <1ms — async adds complexity with no benefit.
-        # Safety requirement: distress MUST be detected before inference begins.
-        distress_detected = self.distress_detector.detect(user_input)
+        # Step 2: Check distress FIRST (non-negotiable)
+        # detector.detect() now returns the specific lang_key (e.g. 'ar-SD') that matched
+        distress_lang_key = self.distress_detector.detect(user_input)
+        distress_detected = distress_lang_key is not None
         
         # Semantic Fallback: if keywords miss and language is under-resourced, use Gemma 4
-        # We gate this to avoid doubling latency for languages with robust keywords (en, ar, fr, sw, ti)
-        KEYWORD_COVERED_LANGS = {"en", "ar", "fr", "sw", "ti"}
+        # We gate this to avoid doubling latency for languages with robust keywords (en, ar, fr, sw, ti, es, so, ar-SD)
+        KEYWORD_COVERED_LANGS = {"en", "ar", "fr", "sw", "ti", "es", "so", "ar-SD"}
         if not distress_detected and detected_lang not in KEYWORD_COVERED_LANGS and len(user_input.split()) > 3:
             distress_detected = self.distress_detector.detect_semantic(user_input, self.model)
+            if distress_detected:
+                distress_lang_key = detected_lang
 
         if distress_detected:
             session["is_complete"] = True
             session["is_distress_exit"] = True
-            safe_exit = self.distress_detector.get_safe_exit_message(detected_lang)
+            
+            # Use specific dialect key if matched, otherwise generic detected language
+            resource_key = distress_lang_key if distress_lang_key and distress_lang_key != "universal" else detected_lang
+            safe_exit = self.distress_detector.get_safe_exit_message(resource_key)
 
             session["history"].append({
                 "role": "user",

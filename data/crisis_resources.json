@@ -1,7 +1,56 @@
 {
-  "en": "International Crisis Line: +1-800-273-8255 | Text HOME to 741741 | IASC helpline: +41 22 917 1234",
-  "ar": "خط الأزمات الدولي: 00-800-0310-1010 | UNHCR: +962-6-400-4026",
-  "fr": "Numéro national de prévention du suicide: 3114 | UNHCR France: 01 44 43 48 58",
-  "sw": "Msaada wa dharura (Kenya): 0800 720 520 | UNHCR Nairobi: +254-20-422-2222",
-  "ti": "ናይ ህጹጽ ሓገዝ (ኤርትራ/ኢትዮጵያ): UNHCR Addis Ababa +251-11-661-2822"
+  "en": {
+    "phone": "+1-800-273-8255",
+    "whatsapp": "https://wa.me/18002738255",
+    "org": "Crisis Text Line",
+    "unhcr": "IASC Humanitarian Support"
+  },
+  "ar": {
+    "phone": "+962-6-400-4026",
+    "whatsapp": "https://wa.me/96264004026",
+    "org": "UNHCR Regional",
+    "unhcr": "UNHCR Middle East"
+  },
+  "ar-SD": {
+    "phone": "+249-183-471-101",
+    "whatsapp": "https://wa.me/249912300000",
+    "org": "Sudan Doctors Union",
+    "unhcr": "UNHCR Khartoum"
+  },
+  "fr": {
+    "phone": "3114",
+    "whatsapp": null,
+    "org": "Prévention Suicide",
+    "unhcr": "UNHCR France"
+  },
+  "sw": {
+    "phone": "+254-20-422-2222",
+    "whatsapp": "https://wa.me/254800720520",
+    "org": "Kenya Red Cross",
+    "unhcr": "UNHCR Nairobi"
+  },
+  "ti": {
+    "phone": "+251-11-661-2822",
+    "whatsapp": null,
+    "org": "UNHCR Tigray",
+    "unhcr": "UNHCR Addis Ababa"
+  },
+  "so": {
+    "phone": "+252-61-700-0010",
+    "whatsapp": "https://wa.me/252617000010",
+    "org": "Somali Red Crescent",
+    "unhcr": "UNHCR Mogadishu"
+  },
+  "es": {
+    "phone": "911",
+    "whatsapp": "https://wa.me/50322394900",
+    "org": "Cruz Roja Salvadoreña",
+    "unhcr": "UNHCR San Salvador"
+  },
+  "my": {
+    "phone": "+95-1-383-684",
+    "whatsapp": null,
+    "org": "Myanmar Red Cross",
+    "unhcr": "UNHCR Yangon"
+  }
 }

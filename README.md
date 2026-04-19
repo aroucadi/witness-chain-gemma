@@ -9,6 +9,16 @@
 
 ---
 
+## Global Conflict Coverage
+
+WitnessChain is context-aware and pre-configured for high-conflict zones to ensure immediate deployment versatility:
+- ** Somalia**: Somali language distress detection + UNHCR Mogadishu resources.
+- ** Sudan**: Sudanese Arabic support + Khartoum Red Crescent integration.
+- ** El Salvador**: MS-13/Gang context safety layer + San Salvador emergency links.
+- ** Myanmar**: Burmese script support + Yangon-localized crisis anchors.
+
+---
+
 ## What is WitnessChain?
 
 WitnessChain enables human rights witnesses — regardless of language, connectivity, or legal literacy — to record structured testimonies that are safe to collect, safe to store, and ready for legal action.
