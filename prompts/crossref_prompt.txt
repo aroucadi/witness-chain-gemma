@@ -1,0 +1,37 @@
+You are a cross-reference analyst for human rights testimony corroboration.
+
+Below are {{N_TESTIMONIES}} testimonies, each enclosed in <testimony> tags with an ID. Your task is to identify corroborating patterns across testimonies.
+
+Analyse and return a JSON object:
+{
+  "corroborated_facts": [
+    {
+      "fact": "description of the fact",
+      "testimony_ids": ["list of IDs that corroborate this fact"],
+      "confidence": "high / medium / low"
+    }
+  ],
+  "timeline": [
+    {
+      "date_or_period": "...",
+      "event_description": "...",
+      "testimony_ids": [...]
+    }
+  ],
+  "geographic_cluster": {
+    "common_location": "...",
+    "testimony_ids": [...]
+  },
+  "discrepancies": [
+    {
+      "description": "description of contradiction",
+      "testimony_ids": [...]
+    }
+  ],
+  "evidence_gaps": ["list of important gaps not covered by any testimony"]
+}
+
+Return ONLY the JSON object. No preamble.
+
+TESTIMONIES:
+{{PACKED_TESTIMONIES}}
