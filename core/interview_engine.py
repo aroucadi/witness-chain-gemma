@@ -184,8 +184,10 @@ class InterviewEngine:
         # Safety requirement: distress MUST be detected before inference begins.
         distress_detected = self.distress_detector.detect(user_input)
         
-        # Semantic Fallback: if keywords miss but input is complex, use Gemma 4 to scan
-        if not distress_detected and len(user_input.split()) > 5:
+        # Semantic Fallback: if keywords miss and language is under-resourced, use Gemma 4
+        # We gate this to avoid doubling latency for languages with robust keywords (en, ar, fr, sw, ti)
+        KEYWORD_COVERED_LANGS = {"en", "ar", "fr", "sw", "ti"}
+        if not distress_detected and detected_lang not in KEYWORD_COVERED_LANGS and len(user_input.split()) > 3:
             distress_detected = self.distress_detector.detect_semantic(user_input, self.model)
 
         if distress_detected:
@@ -229,7 +231,7 @@ class InterviewEngine:
         # Build history string for context
         # Strategy: Exploit Gemma 4's native 256K context window.
         # We pass the ENTIRE history to the model to ensure maximal coherence.
-        combined = history_entries
+        combined = session["history"]
 
         history_text = ""
         for entry in combined:

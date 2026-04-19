@@ -126,6 +126,32 @@ Gemma 4 was fine-tuned on a synthetic dataset of **500-800 TRUST-framework dialo
 
 The complete fine-tuning pipeline is in [`WitnessChain_Unsloth_Finetune.ipynb`](notebooks/WitnessChain_Unsloth_Finetune.ipynb):
 
+## 🐘 Ollama & Llama.cpp (10K Prize Track)
+
+WitnessChain is fully optimized for the **Ollama & Llama.cpp Special Technology Track**.
+
+### Running WitnessChain on Ollama
+We provide a pre-configured `Modelfile` to load our fine-tuned weights (exported via GGUF) into Ollama:
+
+1. **Export GGUF**: Run the export cell in `WitnessChain_Unsloth_Finetune.ipynb` to generate `witnesschain-gemma4.gguf`.
+2. **Create Model**:
+   ```bash
+   ollama create witnesschain -f Modelfile
+   ```
+3. **Run**:
+   ```bash
+   ollama run witnesschain
+   ```
+
+### Data Sovereignty Gate
+To ensure maximum privacy, the system defaults to **LOCAL-ONLY** mode. To enable public Gradio sharing for a demo, you must explicitly set the environment variable:
+```bash
+set WITNESSCHAIN_SHARE_MODE=true
+python app.py
+```
+
+---
+
 ```python
 from unsloth import FastLanguageModel
 

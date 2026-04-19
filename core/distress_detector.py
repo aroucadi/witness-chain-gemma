@@ -163,8 +163,10 @@ class DistressDetector:
             )
             return "TRUE" in response.upper()
         except Exception:
-            # Fail-SAFE: if model check fails, assume distress if text is long
-            return len(text) > 500
+            # F9: Fail-silent safety fallback. 
+            # If the semantic check fails due to inference issues, we rely on keywords.
+            # We avoid the length heuristic which triggers false positives on long testimonies.
+            return False
 
     def detect_async(self, text: str, callback=None) -> threading.Thread:
         """
@@ -173,31 +175,13 @@ class DistressDetector:
         .. deprecated::
             The synchronous `detect()` method is preferred for safety-critical
             paths. Async detection creates a race condition where inference
-            could begin before distress is caught. Retained for API compat.
-
-        Args:
-            text: The user's input text to scan.
-            callback: Optional function called with (bool) result.
-
-        Returns:
-            The thread object (already started).
+            could begin before distress is caught.
         """
-        def _run():
-            try:
-                result = self.detect(text)
-                if callback:
-                    callback(result)
-            except Exception as e:
-                print(f"[WitnessChain] Distress detector thread error: {e}")
-                if callback:
-                    # Fail-SAFE: trigger exit on error.
-                    # False positives (premature exit) are recoverable.
-                    # False negatives (missed distress) are NOT acceptable.
-                    callback(True)
-
-        thread = threading.Thread(target=_run, daemon=True)
-        thread.start()
-        return thread
+        # F7: Hardened deprecation — prevent usage in safety-critical paths
+        raise NotImplementedError(
+            "detect_async is deprecated for safety reasons. Use synchronous detect() instead."
+        )
+        # Old implementation removed to ensure safety.
 
     def get_crisis_resources(self, language_code: str = "en") -> str:
         """

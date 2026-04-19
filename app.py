@@ -181,7 +181,10 @@ def stop_safely():
 def switch_model(model_choice):
     """Switch between base and fine-tuned model."""
     init_system(model_choice)
-    return f"✅ Switched to: {model_choice}"
+    # F2: Hardened feedback — check actual loading status
+    is_fine = getattr(model, "is_finetuned", False)
+    status_label = "Fine-tuned" if is_fine else "Base"
+    return f"✅ Switched to: {model_choice} (Actual Status: {status_label})"
 
 
 # ============================================================
