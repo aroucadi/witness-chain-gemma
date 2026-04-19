@@ -331,6 +331,12 @@ def get_audit_log():
                 f"  TRUST check: questions={trust_check.get('question_count', '?')}, "
                 f"validated={trust_check.get('has_validation', '?')}"
             )
+            token_usage = entry.get("token_usage", {})
+            if token_usage:
+                log_lines.append(
+                    f"  Token Usage: {token_usage.get('total_context', '?')} / {token_usage.get('context_limit', '?')} "
+                    f"({round(token_usage.get('total_context', 0)/token_usage.get('context_limit', 1)*100, 2)}%)"
+                )
         elif event == "DISTRESS_DETECTED":
             log_lines.append(f"  Trigger: {entry.get('trigger_text', 'N/A')}")
 
@@ -383,12 +389,11 @@ def build_app():
 
     with gr.Blocks(
         title="WitnessChain — Trauma-Informed Testimony Infrastructure",
-        # NOTE: Gradio's Soft theme may load web fonts from CDN.
-        # In offline mode, fonts fall back gracefully to system defaults.
-        # This does not affect functionality — UI remains fully operational.
-        theme=gr.themes.Soft(
+        # Using gr.themes.Base() to minimize external CDN dependencies and ensure
+        # full compliance with no-transmission claims (Data Sovereignty Pillar).
+        theme=gr.themes.Base(
             primary_hue="red",
-            secondary_hue="gray",
+            secondary_hue="slate",
         ),
     ) as demo:
 
@@ -670,8 +675,14 @@ if __name__ == "__main__":
     print("[WitnessChain] Building Gradio app...")
     demo = build_app()
 
-    # NOTE: share=True creates a reverse proxy for the UI only.
-    # All model inference runs locally within this Colab runtime.
-    # No witness input or model output is transmitted to Gradio's servers.
-    print("[WitnessChain] Launching with share=True...")
-    demo.launch(share=True, debug=False)
+    # Data Sovereignty Gating: Only launch with share=True if explicitly enabled via ENV.
+    # Defaults to False to prevent accidental exposure of testimony UI to the internet.
+    share_mode = os.environ.get("WITNESSCHAIN_SHARE_MODE", "false").lower() == "true"
+    
+    if share_mode:
+        print("[WitnessChain] ⚠️ WARNING: Launching with share=True.")
+        print("[WitnessChain] UI traffic will be routed through Gradio's proxy.")
+    else:
+        print("[WitnessChain] Launching in LOCAL-ONLY mode for maximum data sovereignty.")
+
+    demo.launch(share=share_mode, debug=False)

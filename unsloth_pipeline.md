@@ -12,6 +12,8 @@ Base LLMs (including Gemma 4-27B) often attempt to "solve" problems, reassure us
 ## 2. Dataset Synthesis
 Since genuine human rights testimonies are strictly confidential and highly sensitive, we utilized a programmatic generation pipeline to create a **synthetic training dataset of 600 examples** that adheres to the TRUST framework. 
 
+**Scenario Augmentation:** To ensure the model remains robust across diverse personas, we applied 'Scenario Augmentation' during synthesis—wrapping base TRUST examples in diverse witness contexts (e.g., elderly witness, frantic witness, translator-mediated).
+
 Each training example consists of:
 - `system`: The TRUST constraints.
 - `input`: The simulated witness statement.
@@ -27,7 +29,11 @@ We used `Unsloth` to optimize the fine-tuning process on limited compute (e.g., 
 - **Target Modules:** `["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]`
 
 ## 4. Pipeline Execution
-The exact, reproducible finetuning execution can be run inside `notebooks/WitnessChain_Unsloth_Finetune.ipynb`. After training is complete, the LoRA adapters are saved to `models/witnesschain-lora-adapter/` and optionally pushed to HuggingFace under the repo `witnesschain-gemma4-trust-lora`.
+The exact, reproducible finetuning execution can be run inside `notebooks/WitnessChain_Unsloth_Finetune.ipynb`. 
+
+**Output Variants:**
+- **LoRA Adapter:** Saved to `models/witnesschain-lora-adapter/`.
+- **GGUF Export:** For Ollama/llama.cpp prize eligibility, the pipeline exports a `q4_k_m` quantized GGUF variant to `models/witnesschain-gguf/`. This allows low-latency local inference on consumer hardware.
 
 ## 5. Performance Improvements
 Post fine-tuning evaluation demonstrated an increase in TRUST compliance from ~50% (base model) to **~90%** (fine-tuned). The fine-tuned model acts strictly as a structured interviewer and reliably truncates any extra questions.

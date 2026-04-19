@@ -12,7 +12,10 @@ WitnessChain makes the following automated decisions during operation:
 
 1. **Language Detection:** Automatically detects the language of witness input and responds in the same language. This is a convenience decision with no downstream legal consequence.
 
-2. **Distress Signal Detection:** Automatically scans every user message for distress keywords in multiple languages. If detected, the system autonomously triggers the safe exit protocol — ending the interview and displaying crisis resources. This errs deliberately on the side of caution: false positives (premature exits) are acceptable; false negatives (missed distress) are not.
+2. **Distress Signal Detection:** Automatically scans every user message for distress signals using a **Dual-Layer check**:
+    - **Layer 1 (Keyword):** High-speed matching across 5 primary languages.
+    - **Layer 2 (Semantic):** LLM-driven fallback using Gemma 4 to catch complex distress or unsupported languages.
+If detected, the system autonomously triggers the safe exit protocol — ending the interview and displaying crisis resources. This errs deliberately on the side of caution: false positives (premature exits) are acceptable; false negatives (missed distress) are not.
 
 3. **Structured Data Extraction:** Automatically extracts dates, locations, incident types, and other structured fields from free-text testimony. These extractions are **proposals** — they are always presented to the user for review and can be edited or deleted before inclusion in any report.
 
@@ -73,4 +76,4 @@ The system provides the following capabilities, accessible at any time during or
 
 The witness owns every byte of their testimony. WitnessChain is a tool, not a custodian. The system has no cloud storage, no database, and no analytics pipeline. Data exists only in the Colab session's local memory and is destroyed when the session ends unless the witness explicitly exports it.
 
-No data is ever transmitted to external APIs, cloud services, or third parties. All model inference is performed locally within the Colab runtime.
+No data is ever transmitted to external APIs, cloud services, or third parties. All model inference is performed locally within the runtime. For public demonstrations, reverse-proxy UI traffic is disabled by default and requires explicit activation via `WITNESSCHAIN_SHARE_MODE=true` to prevent accidental data exposure.

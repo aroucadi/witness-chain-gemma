@@ -33,6 +33,7 @@ class UnslothAdapter:
         from unsloth import FastLanguageModel
 
         try:
+            print(f"[WitnessChain] Attempting to load fine-tuned adapter: {self.adapter_path}...")
             self.model, self.tokenizer = FastLanguageModel.from_pretrained(
                 model_name=self.adapter_path,
                 max_seq_length=262144,  # Gemma 4 native 256K context
@@ -45,9 +46,10 @@ class UnslothAdapter:
             actual_max = getattr(self.model.config, 'max_position_embeddings', None)
             if actual_max and actual_max < 262144:
                 print(f"[WitnessChain] WARNING: Requested 256K context but model config reports {actual_max}")
-            print(f"[WitnessChain] Fine-tuned model loaded from {self.adapter_path}")
+            print(f"[WitnessChain] ✅ SUCCESS: Fine-tuned model loaded from {self.adapter_path}")
         except Exception as e:
-            print(f"[WitnessChain] Adapter not found ({e}). Loading base model.")
+            print(f"[WitnessChain] ⚠️ ADAPTER NOT FOUND ({e}). Redirecting to base Gemma 4.")
+            print(f"[WitnessChain] Note: To enable fine-tuning, run the Unsloth notebook and push your adapter.")
             self.model, self.tokenizer = FastLanguageModel.from_pretrained(
                 model_name=self.base_model_id,
                 max_seq_length=262144,  # Gemma 4 native 256K context
@@ -56,6 +58,7 @@ class UnslothAdapter:
             )
             FastLanguageModel.for_inference(self.model)
             self._is_finetuned = False
+            print(f"[WitnessChain] Base model loaded: {self.base_model_id}")
 
         return self.model, self.tokenizer
 

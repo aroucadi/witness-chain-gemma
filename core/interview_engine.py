@@ -182,7 +182,13 @@ class InterviewEngine:
         # Distress detection runs SYNCHRONOUSLY by design.
         # Keyword matching completes in <1ms — async adds complexity with no benefit.
         # Safety requirement: distress MUST be detected before inference begins.
-        if self.distress_detector.detect(user_input):
+        distress_detected = self.distress_detector.detect(user_input)
+        
+        # Semantic Fallback: if keywords miss but input is complex, use Gemma 4 to scan
+        if not distress_detected and len(user_input.split()) > 5:
+            distress_detected = self.distress_detector.detect_semantic(user_input, self.model)
+
+        if distress_detected:
             session["is_complete"] = True
             session["is_distress_exit"] = True
             safe_exit = self.distress_detector.get_safe_exit_message(detected_lang)
@@ -203,6 +209,7 @@ class InterviewEngine:
                 "session_id": session_id,
                 "event": "DISTRESS_DETECTED",
                 "trigger_text": user_input[:100],
+                "detection_type": "keyword" if self.distress_detector.detect(user_input) else "semantic",
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             })
 
@@ -220,15 +227,9 @@ class InterviewEngine:
         phase = INTERVIEW_PHASES[min(session["phase_index"], len(INTERVIEW_PHASES) - 1)]
 
         # Build history string for context
-        # Strategy: preserve the witness's first message (location/time anchor) to
-        # maintain contextual coherence, then append the most recent turns for recency.
-        # This prevents context window bloat while keeping the interview grounded.
-        history_entries = session["history"]
-        if len(history_entries) > 10:
-            anchor = [e for e in history_entries[:3] if e["role"] == "user"][:1]
-            combined = anchor + history_entries[-8:]
-        else:
-            combined = history_entries
+        # Strategy: Exploit Gemma 4's native 256K context window.
+        # We pass the ENTIRE history to the model to ensure maximal coherence.
+        combined = history_entries
 
         history_text = ""
         for entry in combined:
@@ -317,10 +318,20 @@ class InterviewEngine:
         if any(w in response.lower() for w in validation_words):
             session["trust_scores"]["validation_count"] += 1
 
+        # Track token usage for the judge's context-window audit
+        input_tokens = self.model.get_token_count(full_system_prompt + user_input)
+        response_tokens = self.model.get_token_count(response)
+
         self.audit_log.append({
             "session_id": session_id,
             "event": "GENERATION",
             "phase": phase["name"],
+            "token_usage": {
+                "input": input_tokens,
+                "output": response_tokens,
+                "total_context": input_tokens + response_tokens,
+                "context_limit": self.model.max_context_length
+            },
             "system_prompt_hash": hash(full_system_prompt),
             "system_prompt_preview": full_system_prompt[:200],
             "response_preview": response[:200],
@@ -428,7 +439,8 @@ class InterviewEngine:
     def get_trust_score(self, session_id: str) -> dict:
         """
         Calculate TRUST compliance score for a session.
-
+        NOTE: Violations are measured ON RAW MODEL OUTPUT before truncation.
+        
         Returns:
             Dict with per-metric scores and overall percentage.
         """

@@ -40,7 +40,8 @@ DISTRESS_KEYWORDS = {
         "tafadhali acha", "sitaki", "nimechoka", "nisaidie",
         "siendi", "ni mbaya sana", "naogopa sana", "acha",
         "hataki", "imenitosha", "sitaki kuendelea", "niache",
-        "nahuzunika", "jinambo", "inaniuma"
+        "nahuzunika", "jinambo", "inaniuma", "nimevunjika",
+        "nimeshikwa na hofu", "sitaki tena"
     ],
     "ti": [
         "አቁም", "በቃ", "አልችልም", "ፈሪሐ", "የሕምም", "ኣቁም",
@@ -48,7 +49,7 @@ DISTRESS_KEYWORDS = {
     ],
     "universal": [
         "[STOP]", "[ENOUGH]", "[EXIT]", "!!!",
-        "STOP", "ENOUGH", "EXIT", "HELP"
+        "STOP", "ENOUGH", "EXIT", "HELP", "QUIT"
     ],
 }
 
@@ -135,6 +136,35 @@ class DistressDetector:
             return keyword.lower() in text_lower
         # Single word: require word boundaries to avoid partial matches
         return bool(re.search(r'\b' + re.escape(keyword.lower()) + r'\b', text_lower))
+
+    def detect_semantic(self, text: str, model_loader) -> bool:
+        """
+        Semantic Distress Detection (Fallback).
+        Uses Gemma 4 to evaluate distress in high-complexity cases or
+        unsupported languages where keyword matching fails.
+        """
+        if not text or len(text.split()) < 3:
+            return False
+
+        prompt = (
+            "Evaluate if the following witness testimony snippet indicates a desire to STOP, "
+            "extreme distress, a panic attack, or a refusal to continue. "
+            "Respond ONLY with 'TRUE' or 'FALSE'.\n\n"
+            f"Snippet: \"{text}\"\n\n"
+            "Result:"
+        )
+        
+        try:
+            # Use a fast, greedy decoding for safety check
+            response = model_loader.generate(
+                system_prompt="You are a safety classifier.",
+                user_message=prompt,
+                max_new_tokens=5
+            )
+            return "TRUE" in response.upper()
+        except Exception:
+            # Fail-SAFE: if model check fails, assume distress if text is long
+            return len(text) > 500
 
     def detect_async(self, text: str, callback=None) -> threading.Thread:
         """

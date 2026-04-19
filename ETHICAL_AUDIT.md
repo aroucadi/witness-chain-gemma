@@ -23,7 +23,7 @@ WitnessChain conducts structured, trauma-informed interviews with human rights w
 **Scope limitations:**
 - Research prototype only — not production-ready
 - Demo environment: Google Colab (ephemeral)
-- Supports 5 primary languages (Arabic, French, Swahili, English, Tigrinya) with Gemma 4's 140-language native capability
+- Support 5 primary test languages (Arabic, French, Swahili, English, Tigrinya) with Gemma 4's 140-language native capability and semantic fallback safety layer.
 
 **Assessment:** ✅ Purpose is clearly defined and bounded.
 
@@ -107,7 +107,7 @@ TRUST compliance metrics (single question rate, validation rate) evaluated acros
 
 | Harm | Likelihood | Severity | Mitigation | Residual Risk |
 |---|---|---|---|---|
-| Witness re-traumatisation | Medium | High | TRUST framework + distress detection + safe exit | Low — false negatives possible but minimised |
+| Witness re-traumatisation | Medium | High | TRUST framework + Dual-Layer Distress Detection (Keywords + Semantic Fallback) + safe exit | Low — mitigated by model-driven safety net |
 | Extraction errors creating false record | Medium | High | Human review required; full transcript preserved | Medium — depends on downstream human compliance |
 | Data breach exposing witness identity | Low | Critical | Local-only storage, ephemeral by default, no cloud | Very Low — mitigated by architecture |
 | System used to fabricate testimonies | Low | High | All prompts public; extraction is extractive, not generative | Low — transparency deters misuse |
@@ -126,7 +126,7 @@ TRUST compliance metrics (single question rate, validation rate) evaluated acros
 
 - **Data ownership:** The witness owns all testimony data.
 - **Storage:** Local Colab ephemeral memory only. No cloud, no database.
-- **Transmission:** No data is sent to external APIs. All inference is local.
+- **Transmission:** No data is sent to external APIs. All inference is local. UI sharing via Gradio is disabled by default (`WITNESSCHAIN_SHARE_MODE=false`) to enforce maximum sovereignty.
 - **Deletion:** Witness can delete at any time through the UI. Runtime termination also destroys all data.
 - **Export:** Witness-initiated only. Explicit download action required.
 - **Consent:** No data sharing occurs without explicit per-submission consent.
@@ -187,11 +187,11 @@ These metrics are calculated per session in the Ethical Audit tab of the Gradio 
 
 ```
 Session: {session_id}
-Single question rate:    {X}% of turns had exactly one question
+Single question rate:    {X}% of turns had exactly one question (measured on raw output)
 Validation rate:         {X}% of turns included acknowledgment before extraction
-Safe exit response rate: {X}% of distress signals correctly handled
+Safe exit response rate: {X}% of distress signals correctly handled (dual-layer check)
 Language consistency:    {X}% of turns responded in witness's language
-Overall TRUST score:     {X}%
+Overall TRUST score:     {X}% (Transparency: metrics reflect pre-truncation performance)
 ```
 
 ---

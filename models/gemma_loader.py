@@ -61,16 +61,16 @@ class GemmaLoader:
 
         if self.use_finetuned:
             from .unsloth_adapter import UnslothAdapter
-            # Adapter path: update to your HuggingFace Hub ID after running
-            # the Unsloth fine-tuning notebook and pushing with model.push_to_hub().
-            # Local fallback: models/witnesschain-lora-adapter (if saved locally).
+            # WITNESSCHAIN_ADAPTER_PATH: Set this environment variable to your 
+            # HuggingFace Hub ID (e.g. 'username/witnesschain-lora').
+            # Default fallback: local 'models/witnesschain-lora-adapter' directory.
             adapter_path = os.environ.get(
                 "WITNESSCHAIN_ADAPTER_PATH",
                 "models/witnesschain-lora-adapter"
             )
-            print(f"[WitnessChain] Loading fine-tuned model via UnslothAdapter...")
-            adapter = UnslothAdapter(adapter_path=adapter_path, base_model_id=self._model_id, hf_token=self.hf_token)
-            self.model, self.tokenizer = adapter.load()
+            print(f"[WitnessChain] Initialising UnslothAdapter for fine-tuned inference...")
+            self._adapter = UnslothAdapter(adapter_path=adapter_path, base_model_id=self._model_id, hf_token=self.hf_token)
+            self.model, self.tokenizer = self._adapter.load()
             return self.model, self.tokenizer
 
         bnb_config = BitsAndBytesConfig(
@@ -218,6 +218,13 @@ class GemmaLoader:
             return max(1, len(text) // 4)
 
         return len(self.tokenizer.encode(text, add_special_tokens=False))
+
+    @property
+    def is_finetuned(self):
+        """Returns True if a fine-tuned adapter is successfully loaded."""
+        if hasattr(self, '_adapter'):
+            return self._adapter.is_finetuned_loaded
+        return False
 
     @property
     def model_id(self):

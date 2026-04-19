@@ -29,7 +29,9 @@ The notebook will:
 1. Install dependencies
 2. Authenticate with HuggingFace (set `HF_TOKEN` as a Colab secret)
 3. Load Gemma 4 (27B on A100, 12B on T4 — automatic)
-4. Launch the Gradio demo with a public URL
+4. Launch the Gradio demo (Local-First by default)
+    - Set `WITNESSCHAIN_SHARE_MODE=true` as an environment variable to generate a public URL.
+    - Set `HF_TOKEN` (Reading Gemma 4 weights is always free).
 
 ---
 
@@ -136,7 +138,12 @@ model = FastLanguageModel.get_peft_model(
 )
 ```
 
-Fine-tuned model adapter check: `witnesschain-lora-adapter` logic is enabled directly within the provided notebooks for testing reproducibility.
+### Zero-Cost & Local-First Methodology
+
+WitnessChain is designed for human rights defenders with zero budget:
+- **HuggingFace Hub:** Public repository hosting is **free**.
+- **Model Storage:** The system supports loading LoRA adapters directly from the local `models/witnesschain-lora-adapter` directory. 
+- **No Cloud Dependencies:** You do **not** need a HuggingFace Repository ID to run the demo; the adapter can be trained and run entirely within the same local/ephemeral environment.
 
 ---
 
