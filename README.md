@@ -9,13 +9,16 @@
 
 ---
 
-## Global Conflict Coverage
+## Language & Region Coverage
 
-WitnessChain is context-aware and pre-configured for high-conflict zones to ensure immediate deployment versatility:
-- ** Somalia**: Somali language distress detection + UNHCR Mogadishu resources.
-- ** Sudan**: Sudanese Arabic support + Khartoum Red Crescent integration.
-- ** El Salvador**: MS-13/Gang context safety layer + San Salvador emergency links.
-- ** Myanmar**: Burmese script support + Yangon-localized crisis anchors.
+WitnessChain includes distress detection keywords, localized crisis resources, and UNHCR contact information for:
+
+- **🇸🇴 Somalia**: Somali (`so`) distress detection + UNHCR Mogadishu resources
+- **🇸🇩 Sudan**: Sudanese Arabic (`ar-SD`) dialect-aware detection + Khartoum Red Crescent contacts
+- **🇸🇻 El Salvador**: Spanish (`es`) distress keywords + San Salvador emergency links
+- **🇲🇲 Myanmar**: Burmese (`my`) distress keywords + Yangon-localized crisis contacts
+
+Gemma 4's 140-language native capability extends interview support beyond these core languages.
 
 ---
 

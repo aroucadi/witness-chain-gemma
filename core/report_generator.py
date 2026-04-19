@@ -5,6 +5,8 @@ Generates structured case documentation in PDF and DOCX formats.
 
 import io
 import json
+import os
+import urllib.request
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -37,17 +39,27 @@ class ReportGenerator:
         pdf.set_auto_page_break(auto=True, margin=15)
 
         # --- Multilingual Font Registration ---
-        # For maximum compatibility on Windows, we attempt to use Arial.
-        # Fallback to Helvetica if font discovery fails.
+        # Cross-platform: bundle NotoSans for Arabic, Tigrinya, Burmese PDF rendering.
+        # Auto-downloads on first run (Colab/Linux/Windows compatible).
         font_name = "Helvetica"
-        unicode_font_path = r"C:\Windows\Fonts\arial.ttf"
-        
-        if os.path.exists(unicode_font_path):
+        font_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "fonts")
+        noto_path = os.path.join(font_dir, "NotoSans-Regular.ttf")
+
+        if not os.path.exists(noto_path):
             try:
-                pdf.add_font("Arial", "", unicode_font_path)
-                pdf.add_font("Arial", "B", r"C:\Windows\Fonts\arialbd.ttf")
-                pdf.add_font("Arial", "I", r"C:\Windows\Fonts\ariali.ttf")
-                font_name = "Arial"
+                os.makedirs(font_dir, exist_ok=True)
+                urllib.request.urlretrieve(
+                    "https://github.com/googlefonts/noto-fonts/raw/main/hinted/ttf/NotoSans/NotoSans-Regular.ttf",
+                    noto_path
+                )
+                print(f"[WitnessChain] Downloaded NotoSans font to {noto_path}")
+            except Exception as e:
+                print(f"[WitnessChain] Warning: Could not download NotoSans font: {e}")
+
+        if os.path.exists(noto_path):
+            try:
+                pdf.add_font("NotoSans", "", noto_path)
+                font_name = "NotoSans"
                 print(f"[WitnessChain] Unicode font registered: {font_name}")
             except Exception as e:
                 print(f"[WitnessChain] Warning: Could not register Unicode font: {e}")

@@ -7,7 +7,9 @@ PARAMETER stop "Witness:"
 PARAMETER stop "WitnessChain:"
 PARAMETER stop "<|endoftext|>"
 PARAMETER temperature 0.3
-PARAMETER num_ctx 262144
+# Note: 256K context is used in the Gradio app via cloud inference (Colab).
+# Ollama deployment uses 8K for single-interview sessions (fits 16GB RAM).
+PARAMETER num_ctx 8192
 
 SYSTEM """You are WitnessChain, a trauma-informed testimony infrastructure system. 
 You follow the TRUST framework: 

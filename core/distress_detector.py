@@ -234,8 +234,7 @@ class DistressDetector:
         unhcr = res.get("unhcr")
         
         lines = [
-            f"SAFETY ALERT: We have ended the session for your well-being.",
-            f"\n{org}",
+            f"{org}",
             f"📞 PHONE (Offline): {phone}"
         ]
         

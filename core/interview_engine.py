@@ -215,7 +215,8 @@ class InterviewEngine:
                 "session_id": session_id,
                 "event": "DISTRESS_DETECTED",
                 "trigger_text": user_input[:100],
-                "detection_type": "keyword" if self.distress_detector.detect(user_input) else "semantic",
+                "detection_type": "keyword" if distress_lang_key and distress_lang_key != detected_lang else "semantic",
+                "matched_language": distress_lang_key,
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             })
 
