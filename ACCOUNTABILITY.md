@@ -13,7 +13,7 @@ WitnessChain makes the following automated decisions during operation:
 1. **Language Detection:** Automatically detects the language of witness input and responds in the same language. This is a convenience decision with no downstream legal consequence.
 
 2. **Distress Signal Detection:** Automatically scans every user message for distress signals using a **Dual-Layer check**:
-    - **Layer 1 (Keyword):** High-speed matching across 5 primary languages.
+    - **Layer 1 (Keyword):** High-speed matching across 9 languages (English, Arabic, Sudanese Arabic, French, Swahili, Tigrinya, Somali, Burmese, Spanish).
     - **Layer 2 (Semantic):** LLM-driven fallback using Gemma 4 to catch complex distress or unsupported languages.
 If detected, the system autonomously triggers the safe exit protocol — ending the interview and displaying crisis resources. This errs deliberately on the side of caution: false positives (premature exits) are acceptable; false negatives (missed distress) are not.
 
