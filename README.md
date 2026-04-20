@@ -5,9 +5,11 @@
 > "Record the truth. Safely. Everywhere."
 
 [![Kaggle Gemma 4 Good](https://img.shields.io/badge/Kaggle-Gemma%204%20Good-blue)](https://www.kaggle.com/competitions/gemma-4-good-hackathon)
-[![Unsloth](https://img.shields.io/badge/Fine--tuned%20with-Unsloth-green)](https://github.com/unslothai/unsloth)
-![Domain](https://img.shields.io/badge/Domain-Human%20Rights-red)
+![Gemma 4](https://img.shields.io/badge/Model-Gemma%204%2027B-blue)
 ![Context](https://img.shields.io/badge/Context-256K-blue)
+[![Unsloth](https://img.shields.io/badge/Fine--tuned%20with-Unsloth-green)](https://github.com/unslothai/unsloth)
+![Gradio](https://img.shields.io/badge/UI-Gradio%204.x-orange)
+![Domain](https://img.shields.io/badge/Domain-Human%20Rights-red)
 
 ---
 
