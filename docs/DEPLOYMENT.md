@@ -4,6 +4,19 @@ WitnessChain is designed to be highly portable, running everywhere from a high-e
 
 ---
 
+## ⚡ Performance Tiers: Fidelity vs. Speed
+
+We distinguish between two deployment modes based on the mission context:
+
+| Tier | Deployment | Hardware | Primary Use Case |
+|---|---|---|---|
+| **High Fidelity (27B)** | Cloud / High-end PC | A100 / RTX 4090 | Multi-witness cross-referencing and courtroom-grade evidence extraction. |
+| **Rugged Edge (12B)** | Laptop / Local Server | 16GB RAM / T4 | Rapid field data collection in internet-denied crisis zones. |
+
+**Architectural Choice:** While competitors may focus on "Consumer-Grade" speed using LiteRT or MediaPipe, WitnessChain prioritizes **Legal-Grade Fidelity**. We use **GGUF** and **Quantized LoRA** because they maintain the complex behavioral logic of the TRUST framework that smaller edge models often fail to capture.
+
+---
+
 ## 1. Cloud Deployment (The "Easy" Demo)
 
 The fastest way to see WitnessChain in action is via Google Colab.

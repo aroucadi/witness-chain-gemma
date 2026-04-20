@@ -66,6 +66,12 @@ No data ever leaves the witness's device.
 *   **Ephemeral Memory:** Data lives only in the session and is destroyed on exit.
 *   **Sovereignty Gate:** Remote sharing is disabled by default to prevent accidental data exfiltration.
 
+### ⚡ Performance & Ruggedness (Edge-Ready)
+While optimized for high-fidelity 27B inference, WitnessChain is built for the "Rugged Edge":
+*   **Intelligent Fallback:** Auto-detects VRAM and falls back to a **12B model** (or LiteRT/GGUF) for high-speed operation on consumer hardware.
+*   **Low-Rank Optimization:** Uses 4-bit **nf4** quantization and LoRA adapters to provide 30B-level intelligence on 16GB-class GPUs.
+*   **Connectivity-Independent:** Native support for **GGUF** weights ensures the system runs in "Air-Gapped" environments without internet access.
+
 ---
 
 ## 🌍 Global Presence (Localized Safety)
