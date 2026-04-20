@@ -38,5 +38,13 @@ WitnessChain is currently in its **Research Prototype** phase, optimized for the
 
 ---
 
+## Phase 5: Mobile Edge Collection (Satellite Nodes)
+
+*   **Zero-Footprint Collection:** Developing a lightweight "WitnessChain-Lite" companion app for Android/iOS.
+*   **On-Device Interview Engine:** Utilizing **Google AICore** (Gemini Nano) and **MediaPipe LLM Inference** to run human-verified TRUST interviews entirely on the witness's phone.
+*   **Secure Sync:** Implementing per-session encrypted sync between the mobile collection node and the high-fidelity (27B) WitnessChain Core system.
+
+---
+
 **Interested in contributing or deploying WitnessChain?**  
 See `ACCOUNTABILITY.md` for our governing ethics and `docs/DEPLOYMENT.md` for technical setup instructions.
