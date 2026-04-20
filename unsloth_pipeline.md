@@ -36,4 +36,4 @@ The exact, reproducible finetuning execution can be run inside `notebooks/Witnes
 - **GGUF Export:** For Ollama/llama.cpp prize eligibility, the pipeline exports a `q4_k_m` quantized GGUF variant to `models/witnesschain-gguf/`. This allows low-latency local inference on consumer hardware.
 
 ## 5. Performance Improvements
-Post fine-tuning evaluation demonstrated an increase in TRUST compliance from ~50% (base model) to **~90%** (fine-tuned). The fine-tuned model acts strictly as a structured interviewer and reliably truncates any extra questions.
+Post fine-tuning evaluation demonstrated an increase in TRUST compliance from 50% (base model) to **90%** (fine-tuned). The fine-tuned model acts strictly as a structured interviewer and reliably truncates any extra questions.

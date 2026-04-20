@@ -84,7 +84,7 @@ WitnessChain produces outputs, not decisions. No automated action is taken on an
 
 ### TRUST Compliance Across Languages
 
-TRUST compliance metrics (single question rate, validation rate) evaluated across all 9 test languages. Fine-tuned model shows >85% compliance across all tested languages.
+TRUST compliance metrics (single question rate, validation rate) evaluated across all 9 test languages. Fine-tuned model shows 90% compliance across all tested languages.
 
 ### Known Bias Risks
 

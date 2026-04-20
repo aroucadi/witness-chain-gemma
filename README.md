@@ -38,6 +38,7 @@ WitnessChain is architected to stack three specialized technology tracks:
 *   **Innovation:** We fine-tuned Gemma 4 on a synthetic dataset of **800 TRUST-framework dialogue examples** using Unsloth's LoRA adapters.
 *   **Result:** Boosted TRUST compliance (empathy, single-question turns) from **50% to 90%**.
 *   **Proof:** See [`WitnessChain_Unsloth_Finetune.ipynb`](notebooks/WitnessChain_Unsloth_Finetune.ipynb).
+*   **Adapter Artifact:** [HuggingFace Adapter URL] (Instruction: Run the finetune notebook and push to Hub to populate this).
 
 ### 2. Ollama Deployment Track ($10K)
 *   **Innovation:** Full local deployment capability with a pre-configured `Modelfile` and trauma-informed system prompt.
