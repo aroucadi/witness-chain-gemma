@@ -13,13 +13,18 @@
 
 ---
 
-## 📖 Documentation Map
-Explore the depth of WitnessChain:
+## 📖 Quick Links & Submission Portfolio
 
-*   **[Core Concepts](docs/CONCEPTS.md):** Deep dive into the **TRUST Framework**, **Trauma-Informed Computing (TIC)**, and **LoRA** fine-tuning.
-*   **[Deployment Guide](docs/DEPLOYMENT.md):** How to run WitnessChain on **Google Colab**, **Ollama**, or **llama.cpp**.
-*   **[Reproducibility](docs/REPRODUCIBILITY.md):** Step-by-step guide to verifying our **90% TRUST Compliance** benchmark.
-*   **[Ethical Governance](ETHICAL_AUDIT.md):** Our audit against the **Amnesty International Accountability Toolkit**.
+Explore the depth of WitnessChain and verify our eligibility for stacked prize tracks:
+
+| Track / Resource | Artifact | Purpose |
+|---|---|---|
+| **🏆 Unsloth ($10K)** | [HuggingFace Adapter] | LoRA fine-tuned engine (Gemma 4-27B) |
+| **🏆 Ollama ($10K)** | [Modelfile](Modelfile) | Local-first deployment manifest |
+| **🏆 llama.cpp ($5K)** | [GGUF Weights] | Efficient inference on consumer hardware |
+| **Verification** | [REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) | **90% TRUST Compliance** benchmark |
+| **Demo Script** | [DEMO_GUIDE.md](docs/DEMO_GUIDE.md) | 3-minute video showcase guide |
+| **Conceptual Base** | [CONCEPTS.md](docs/CONCEPTS.md) | TRUST Framework & 256K Context Packing |
 
 ---
 

@@ -66,6 +66,9 @@ def init_system(model_choice="Fine-tuned WitnessChain"):
     global extraction_engine, crossref_engine, report_generator
     global testimony_store
 
+    status = f"🔄 Initialising system with {model_choice}..."
+    print(f"[WitnessChain] {status}")
+
     # Distress detector (lightweight, always available)
     distress_detector = DistressDetector()
 
@@ -81,14 +84,17 @@ def init_system(model_choice="Fine-tuned WitnessChain"):
 
     try:
         model.load()
+        status = f"✅ System Ready: {model_choice}"
     except Exception as e:
         print(f"[WitnessChain] Model loading error: {e}")
-        print("[WitnessChain] Running in demo mode without model.")
+        status = f"⚠️ Model loading error: {e}. Running in demo mode."
 
     # Init engines
     interview_engine = InterviewEngine(model, distress_detector)
     extraction_engine = ExtractionEngine(model)
     crossref_engine = CrossReferenceEngine(model)
+
+    return status
 
 
 # ============================================================
@@ -439,6 +445,12 @@ def build_app():
                         label="Model Status",
                         value="Ready",
                         interactive=False,
+                    )
+                    # --- Live Model Toggle handler ---
+                    model_toggle.change(
+                        fn=init_system,
+                        inputs=[model_toggle],
+                        outputs=[model_status],
                     )
                 with gr.Column(scale=1):
                     stop_btn = gr.Button(
